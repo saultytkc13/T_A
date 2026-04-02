@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% block title %}Login — Tender AI{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+  }
+
+  .login-page {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+  }
+
+  /* ── Left panel ── */
+  .login-left {
+    flex: 1;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 48px;
+  }
+
+  .login-left::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 40%, rgba(30,111,232,0.22) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 50% at 80% 80%, rgba(59,139,255,0.1)  0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .left-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .left-content {
+    position: relative;
+    max-width: 400px;
+  }
+
+  .left-logo {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.5rem; font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.03em;
+    margin-bottom: 48px;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .left-logo em { font-style: normal; color: var(--blue-light); }
+
+  .left-content h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 800; color: var(--white);
+    letter-spacing: -0.03em;
+    line-height: 1.15; margin-bottom: 16px;
+  }
+  .left-content h2 em { font-style: normal; color: var(--blue-light); }
+
+  .left-content p {
+    font-size: 0.92rem; color: rgba(255,255,255,0.5);
+    line-height: 1.7; margin-bottom: 40px;
+  }
+
+  .left-features {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .left-feat {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .left-feat-icon {
+    width: 36px; height: 36px;
+    background: rgba(30,111,232,0.18);
+    border: 1px solid rgba(30,111,232,0.25);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .left-feat p {
+    font-size: 0.85rem; color: rgba(255,255,255,0.65);
+    margin: 0; line-height: 1.4;
+  }
+  .left-feat strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+
+  /* ── Right panel (form) ── */
+  .login-right {
+    width: 480px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 40px;
+    background: var(--white);
+  }
+
+  .login-form-wrap {
+    width: 100%;
+    max-width: 380px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .form-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 10px;
+  }
+
+  .form-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.7rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -0.03em;
+    margin-bottom: 6px; line-height: 1.15;
+  }
+
+  .form-subtitle {
+    font-size: 0.88rem; color: var(--muted);
+    margin-bottom: 36px; line-height: 1.5;
+  }
+
+  .field { margin-bottom: 20px; }
+
+  .field-label {
+    display: block;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .field-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 11px;
+    padding: 13px 16px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(30,111,232,0.1);
+  }
+  .field-input::placeholder { color: #b0bdd0; }
+
+  .field-last { margin-bottom: 28px; }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 3px 14px rgba(30,111,232,0.28);
+  }
+  .submit-btn:hover {
+    background: var(--blue-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30,111,232,0.35);
+  }
+
+  .form-footer {
+    text-align: center;
+    font-size: 0.85rem; color: var(--muted);
+    margin-top: 24px;
+  }
+  .form-footer a {
+    color: var(--blue); font-weight: 600;
+    text-decoration: none;
+    transition: text-decoration 0.15s;
+  }
+  .form-footer a:hover { text-decoration: underline; }
+
+  .form-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 28px 0;
+  }
+  .form-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .form-divider-text { font-size: 0.75rem; color: #b0bdd0; font-weight: 500; }
+
+  .trust-row {
+    display: flex; justify-content: center;
+    align-items: center; gap: 16px;
+    flex-wrap: wrap; margin-top: 28px;
+  }
+  .trust-chip {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 0.74rem; color: #9ca3af; font-weight: 500;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive — stack on mobile ── */
+  @media (max-width: 800px) {
+    .login-page { flex-direction: column; }
+    .login-left { display: none; }
+    .login-right {
+      width: 100%;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+  }
+</style>
+
+<div class="login-page">
+
+  <!-- Left decorative panel -->
+  <div class="login-left">
+    <div class="left-grid"></div>
+    <div class="left-content">
+      <a href="/" class="left-logo"><em>Tender</em>AI</a>
+      <h2>Welcome <em>back</em> to smarter bidding</h2>
+      <p>Log in to access your tender analyses, eligibility scores, and bid recommendations — all in one place.</p>
+      <div class="left-features">
+        <div class="left-feat">
+          <div class="left-feat-icon">⚡</div>
+          <p><strong>Instant analysis</strong> — results in under 30 seconds</p>
+        </div>
+        <div class="left-feat">
+          <div class="left-feat-icon">📌</div>
+          <p><strong>Citation-backed</strong> — every result linked to the source</p>
+        </div>
+        <div class="left-feat">
+          <div class="left-feat-icon">📂</div>
+          <p><strong>Full history</strong> — track every tender you've reviewed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="login-right">
+    <div class="login-form-wrap">
+
+      <p class="form-eyebrow">Welcome back</p>
+      <h1 class="form-title">Log in to TenderAI</h1>
+      <p class="form-subtitle">Enter your credentials to access your account.</p>
+
+      <form method="POST">
+        <div class="field">
+          <label class="field-label">Email Address</label>
+          <input type="email" name="email" required
+            class="field-input"
+            placeholder="you@company.com"/>
+        </div>
+        <div class="field field-last">
+          <label class="field-label">Password</label>
+          <input type="password" name="password" required
+            class="field-input"
+            placeholder="••••••••"/>
+        </div>
+        <button type="submit" class="submit-btn">Log In</button>
+      </form>
+
+      <div class="form-divider">
+        <div class="form-divider-line"></div>
+        <span class="form-divider-text">New to TenderAI?</span>
+        <div class="form-divider-line"></div>
+      </div>
+
+      <p class="form-footer">
+        Don't have an account? <a href="/register">Create one free</a>
+      </p>
+
+      <div class="trust-row">
+        <div class="trust-chip">🔒 Secure login</div>
+        <div class="trust-chip">🇮🇳 Built for India</div>
+        <div class="trust-chip">✅ Free to start</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

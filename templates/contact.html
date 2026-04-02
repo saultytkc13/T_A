@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+{% block title %}Contact — Tender AI{% endblock %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+  }
+
+  .contact-page {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .contact-hero {
+    position: relative;
+    background: var(--navy);
+    padding: 80px 24px 70px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .contact-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 55% 60% at 15% 50%, rgba(30,111,232,0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 85% 30%, rgba(59,139,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .contact-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 56px;
+    background: var(--surface);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  .contact-hero-inner {
+    position: relative;
+    max-width: 540px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center; gap: 8px;
+    background: rgba(30,111,232,0.15);
+    border: 1px solid rgba(30,111,232,0.3);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #7eb8ff; margin-bottom: 24px;
+  }
+  .hero-badge span {
+    width: 6px; height: 6px;
+    background: var(--blue-light);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  .contact-hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+    line-height: 1.15;
+  }
+  .contact-hero h1 em { font-style: normal; color: var(--blue-light); }
+  .contact-hero p {
+    color: rgba(255,255,255,0.55);
+    font-size: 1rem; font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── Body ── */
+  .contact-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ── Info sidebar ── */
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .info-block {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 22px;
+    box-shadow: 0 2px 12px rgba(10,22,40,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .info-block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(10,22,40,0.08);
+  }
+  .info-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, rgba(30,111,232,0.1), rgba(59,139,255,0.07));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+  }
+  .info-block h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .info-block p {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.55;
+  }
+  .info-block a {
+    color: var(--blue); text-decoration: none; font-weight: 500;
+  }
+  .info-block a:hover { text-decoration: underline; }
+
+  /* Response time badge */
+  .response-badge {
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 4px 16px rgba(10,22,40,0.12);
+  }
+  .response-badge-icon {
+    width: 44px; height: 44px;
+    background: rgba(30,111,232,0.2);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .response-badge-text h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--white); margin-bottom: 3px;
+  }
+  .response-badge-text p {
+    font-size: 0.78rem; color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+
+  /* ── Contact form card ── */
+  .contact-form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 36px;
+    box-shadow: 0 4px 28px rgba(10,22,40,0.07);
+    animation: fadeUp 0.6s 0.15s ease both;
+  }
+
+  .form-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--text); margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .form-subtitle {
+    font-size: 0.84rem; color: var(--muted);
+    margin-bottom: 28px; line-height: 1.5;
+  }
+
+  .form-field { margin-bottom: 20px; }
+  .form-field:last-of-type { margin-bottom: 0; }
+
+  .field-label {
+    display: block;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .field-input,
+  .field-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: #fafbfd;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+  }
+  .field-input:focus,
+  .field-textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(30,111,232,0.1);
+  }
+  .field-input::placeholder,
+  .field-textarea::placeholder { color: #b0bdd0; }
+
+  .field-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+  .form-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  .send-btn {
+    width: 100%;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 3px 12px rgba(30,111,232,0.25);
+  }
+  .send-btn:hover {
+    background: var(--blue-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30,111,232,0.32);
+  }
+  .send-btn svg { flex-shrink: 0; }
+
+  .form-note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 680px) {
+    .contact-body { grid-template-columns: 1fr; }
+    .contact-form-card { padding: 24px 20px; }
+  }
+</style>
+
+<div class="contact-page">
+
+  <!-- Hero -->
+  <section class="contact-hero">
+    <div class="hero-grid"></div>
+    <div class="contact-hero-inner">
+      <div class="hero-badge"><span></span> Get In Touch</div>
+      <h1>We'd love to <em>hear from you</em></h1>
+      <p>Have a question, feedback, or need help with a tender? Send us a message and we'll get back to you shortly.</p>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <div class="contact-body">
+
+    <!-- Info sidebar -->
+    <div class="contact-info">
+
+      <div class="info-block">
+        <div class="info-icon">📧</div>
+        <h4>Email Us</h4>
+        <p>Drop us a line anytime.<br><a href="mailto:support@tenderai.in">support@tenderai.in</a></p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-icon">💬</div>
+        <h4>General Enquiries</h4>
+        <p>Questions about pricing, features, or eligibility? We're happy to help.</p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-icon">🐛</div>
+        <h4>Report an Issue</h4>
+        <p>Found a bug or unexpected result? Tell us — we take every report seriously.</p>
+      </div>
+
+      <div class="response-badge">
+        <div class="response-badge-icon">⚡</div>
+        <div class="response-badge-text">
+          <h4>Fast Response</h4>
+          <p>We typically reply within 24 hours on business days.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Form card -->
+    <div class="contact-form-card">
+      <p class="form-title">Send us a message</p>
+      <p class="form-subtitle">Fill in the form below and we'll get back to you as soon as possible.</p>
+
+      <div class="form-field">
+        <label class="field-label">Your Name</label>
+        <input type="text" class="field-input" placeholder="e.g. Rajesh Kumar"/>
+      </div>
+
+      <div class="form-field">
+        <label class="field-label">Email Address</label>
+        <input type="email" class="field-input" placeholder="you@company.com"/>
+      </div>
+
+      <div class="form-field" style="margin-bottom:24px;">
+        <label class="field-label">Message</label>
+        <textarea rows="4" class="field-textarea" placeholder="Tell us how we can help…"></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <button class="send-btn">
+        Send Message
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 8h12M10 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <p class="form-note">🔒 Your message is private and secure.</p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Tender AI{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#4F46E5",
+            primarydark: "#3730A3",
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #0a1628;
+      --navy-mid: #112240;
+      --blue: #1e6fe8;
+      --blue-light: #3b8bff;
+      --surface: #f4f7fd;
+      --white: #ffffff;
+      --border: #dde4f0;
+      --text: #0a1628;
+      --muted: #5a6a8a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    main { flex: 1; }
+
+    /* ── Navbar ── */
+    .base-nav {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: box-shadow 0.2s;
+    }
+
+    .base-nav.scrolled {
+      box-shadow: 0 4px 24px rgba(10,22,40,0.08);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Logo */
+    .nav-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      transition: opacity 0.2s;
+    }
+    .nav-logo:hover { opacity: 0.85; }
+    .nav-logo .logo-tender { color: var(--blue); }
+    .nav-logo .logo-ai {
+      color: var(--navy);
+      background: linear-gradient(135deg, var(--navy) 0%, #2d4a7a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-logo-dot {
+      width: 6px; height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      margin-left: 3px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Nav links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-link {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .nav-link:hover {
+      color: var(--blue);
+      background: rgba(30,111,232,0.06);
+    }
+
+    .nav-btn-outline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--blue);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(30,111,232,0.3);
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+    }
+    .nav-btn-outline:hover {
+      background: rgba(30,111,232,0.06);
+      border-color: var(--blue);
+    }
+
+    .nav-btn-primary {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+      padding: 9px 20px;
+      border-radius: 9px;
+      background: var(--blue);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 10px rgba(30,111,232,0.25);
+      margin-left: 4px;
+    }
+    .nav-btn-primary:hover {
+      background: var(--blue-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(30,111,232,0.32);
+    }
+
+    .nav-btn-logout {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--white);
+      text-decoration: none;
+      padding: 9px 20px;
+      border-radius: 9px;
+      background: var(--navy);
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.01em;
+      margin-left: 4px;
+    }
+    .nav-btn-logout:hover {
+      background: #1a2f4a;
+      transform: translateY(-1px);
+    }
+
+    /* Active nav indicator — optional, can add active class from Flask */
+    .nav-link.active {
+      color: var(--blue);
+      background: rgba(30,111,232,0.08);
+    }
+
+    /* ── Flash messages ── */
+    .flash-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px 0;
+      width: 100%;
+    }
+
+    .flash-msg {
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: flashIn 0.35s ease both;
+      border: 1px solid;
+    }
+    .flash-msg.error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+    .flash-msg.success {
+      background: #f0fdf4;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    @keyframes flashIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Footer ── */
+    .base-footer {
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      margin-top: 64px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 32px;
+    }
+
+    .footer-brand .footer-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .footer-brand .footer-logo span { color: var(--blue); }
+
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .footer-link {
+      font-size: 0.82rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+    .footer-link:hover { color: var(--blue); }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      text-align: center;
+    }
+    .footer-bottom p {
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+
+    /* ── Mobile nav toggle ── */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      border: none;
+      background: none;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--navy);
+      border-radius: 2px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .nav-mobile {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px 24px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--white);
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile .nav-link, .nav-mobile .nav-btn-primary,
+    .nav-mobile .nav-btn-logout, .nav-mobile .nav-btn-outline {
+      width: 100%;
+      text-align: center;
+      margin-left: 0;
+    }
+
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-links { justify-content: flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="base-nav" id="baseNav">
+    <div class="nav-inner">
+
+      <a href="/" class="nav-logo">
+        <span class="logo-tender">Tender</span><span class="logo-ai">AI</span>
+        <span class="nav-logo-dot"></span>
+      </a>
+
+      <!-- Desktop links -->
+      <div class="nav-links">
+        {% if session.get('user_id') %}
+          <a href="/dashboard" class="nav-link">Dashboard</a>
+          <a href="/analyze"   class="nav-link">Analyze</a>
+          <a href="/history"   class="nav-link">History</a>
+          <a href="/profile"   class="nav-link">Profile</a>
+          <a href="/logout"    class="nav-btn-logout">Logout</a>
+        {% else %}
+          <a href="/about"   class="nav-link">About</a>
+          <a href="/pricing" class="nav-link">Pricing</a>
+          <a href="/contact" class="nav-link">Contact</a>
+          <a href="/login"   class="nav-btn-outline">Login</a>
+          <a href="/register" class="nav-btn-primary">Get Started</a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button class="nav-hamburger" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="nav-mobile" id="navMobile">
+      {% if session.get('user_id') %}
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/analyze"   class="nav-link">Analyze</a>
+        <a href="/history"   class="nav-link">History</a>
+        <a href="/profile"   class="nav-link">Profile</a>
+        <a href="/logout"    class="nav-btn-logout">Logout</a>
+      {% else %}
+        <a href="/about"    class="nav-link">About</a>
+        <a href="/pricing"  class="nav-link">Pricing</a>
+        <a href="/contact"  class="nav-link">Contact</a>
+        <a href="/login"    class="nav-btn-outline">Login</a>
+        <a href="/register" class="nav-btn-primary">Get Started</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for category, message in messages %}
+          <div class="flash-msg {% if category == 'error' %}error{% else %}success{% endif %}">
+            {% if category == 'error' %}⚠️{% else %}✅{% endif %}
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Page content -->
+  <main class="flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="base-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="/" class="footer-logo"><span>Tender</span>AI</a>
+        <p>AI-powered tender analysis for Indian SMEs and contractors. Bid smarter, win more.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/about"   class="footer-link">About</a>
+        <a href="/pricing" class="footer-link">Pricing</a>
+        <a href="/contact" class="footer-link">Contact</a>
+        <a href="/login"   class="footer-link">Login</a>
+        <a href="/register" class="footer-link">Register</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 TenderAI. All rights reserved. · Built for India 🇮🇳</p>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll shadow
+    const nav = document.getElementById('baseNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Mobile menu toggle
+    const toggle = document.getElementById('navToggle');
+    const mobile = document.getElementById('navMobile');
+    toggle?.addEventListener('click', () => {
+      mobile.classList.toggle('open');
+    });
+
+    // Close mobile menu on link click
+    mobile?.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => mobile.classList.remove('open'));
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block title %}History — Tender AI{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --yellow: #d97706;
+    --yellow-bg: #fffbeb;
+    --yellow-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --indigo: #4f46e5;
+    --indigo-bg: #eef2ff;
+    --indigo-border: #c7d2fe;
+  }
+
+  .history-page {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  .history-wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Page header ── */
+  .history-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.5s ease both;
+  }
+  .history-header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -0.03em;
+    margin-bottom: 4px;
+  }
+  .history-header p { font-size: 0.88rem; color: var(--muted); }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: var(--white);
+    padding: 11px 22px;
+    border-radius: 10px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 3px 12px rgba(30,111,232,0.25);
+    white-space: nowrap;
+  }
+  .btn-primary:hover {
+    background: var(--blue-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(30,111,232,0.3);
+  }
+
+  /* ── History list ── */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* ── History item card ── */
+  .history-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(10,22,40,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+  .history-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 32px rgba(10,22,40,0.09);
+  }
+
+  /* Stagger animation for each card */
+  .history-card:nth-child(1)  { animation-delay: 0.05s; }
+  .history-card:nth-child(2)  { animation-delay: 0.1s; }
+  .history-card:nth-child(3)  { animation-delay: 0.15s; }
+  .history-card:nth-child(4)  { animation-delay: 0.2s; }
+  .history-card:nth-child(5)  { animation-delay: 0.25s; }
+  .history-card:nth-child(6)  { animation-delay: 0.3s; }
+  .history-card:nth-child(7)  { animation-delay: 0.35s; }
+  .history-card:nth-child(8)  { animation-delay: 0.4s; }
+  .history-card:nth-child(9)  { animation-delay: 0.45s; }
+  .history-card:nth-child(10) { animation-delay: 0.5s; }
+
+  /* Left accent bar based on eligibility */
+  .history-card.score-high   { border-left: 4px solid #4ade80; }
+  .history-card.score-medium { border-left: 4px solid #fbbf24; }
+  .history-card.score-low    { border-left: 4px solid #f87171; }
+
+  .card-top {
+    padding: 22px 26px 16px;
+  }
+
+  .card-row1 {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 4px;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+  .card-meta {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-meta-dot {
+    width: 3px; height: 3px;
+    background: #cbd5e1; border-radius: 50%;
+  }
+
+  .card-pills {
+    display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+  }
+
+  .pill {
+    display: inline-flex; align-items: center;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.75rem; font-weight: 700;
+    border: 1px solid;
+  }
+  .pill.green  { background: var(--green-bg);  color: var(--green);  border-color: var(--green-border); }
+  .pill.yellow { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow-border); }
+  .pill.red    { background: var(--red-bg);    color: var(--red);    border-color: var(--red-border); }
+  .pill.indigo { background: var(--indigo-bg); color: var(--indigo); border-color: var(--indigo-border); }
+
+  .card-summary {
+    font-size: 0.87rem; color: #4b5563;
+    line-height: 1.65; margin-top: 4px;
+  }
+
+  /* Recommendations */
+  .card-recs {
+    border-top: 1px solid var(--border);
+    padding: 14px 26px 18px;
+    background: #fafbfd;
+  }
+  .card-recs-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+  }
+  .rec-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.82rem; color: #4b5563;
+    line-height: 1.5; margin-bottom: 6px;
+  }
+  .rec-item:last-child { margin-bottom: 0; }
+  .rec-check {
+    color: var(--indigo); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 80px 24px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(10,22,40,0.05);
+    animation: fadeUp 0.5s ease both;
+  }
+  .empty-icon {
+    font-size: 3.5rem; margin-bottom: 16px; display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+  .empty-state h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.05rem; font-weight: 700;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .empty-state p { font-size: 0.88rem; color: var(--muted); margin-bottom: 24px; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+
+  @media (max-width: 600px) {
+    .card-top { padding: 18px 18px 14px; }
+    .card-recs { padding: 12px 18px 16px; }
+    .card-row1 { flex-direction: column; }
+  }
+</style>
+
+<div class="history-page">
+<div class="history-wrap">
+
+  <!-- Header -->
+  <div class="history-header">
+    <div>
+      <h1>Analysis History</h1>
+      <p>All your past tender analyses</p>
+    </div>
+    <a href="/analyze" class="btn-primary">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      New Analysis
+    </a>
+  </div>
+
+  {% if history %}
+  <div class="history-list">
+    {% for item in history %}
+    <div class="history-card
+      {% if item.eligibility_score >= 70 %}score-high
+      {% elif item.eligibility_score >= 40 %}score-medium
+      {% else %}score-low{% endif %}">
+
+      <div class="card-top">
+        <div class="card-row1">
+          <div>
+            <p class="card-title">{{ item.project_name }}</p>
+            <div class="card-meta">
+              <span>{{ item.location or '—' }}</span>
+              <span class="card-meta-dot"></span>
+              <span>{{ item.created_at[:10] }}</span>
+            </div>
+          </div>
+          <div class="card-pills">
+            <span class="pill
+              {% if item.eligibility_score >= 70 %}green
+              {% elif item.eligibility_score >= 40 %}yellow
+              {% else %}red{% endif %}">
+              Eligibility: {{ item.eligibility_score }}%
+            </span>
+            <span class="pill indigo">
+              Difficulty: {{ item.difficulty_score }}/10
+            </span>
+          </div>
+        </div>
+        <p class="card-summary">{{ item.summary }}</p>
+      </div>
+
+      {% if item.recommendations %}
+      <div class="card-recs">
+        <p class="card-recs-label">Recommendations</p>
+        {% for rec in item.recommendations %}
+        <div class="rec-item">
+          <span class="rec-check">✓</span>
+          <span>{{ rec }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-icon">📂</span>
+    <h3>No history yet</h3>
+    <p>Your past tender analyses will appear here.</p>
+    <a href="/analyze" class="btn-primary" style="display:inline-flex;">Analyze Your First Tender</a>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
+{% endblock %}

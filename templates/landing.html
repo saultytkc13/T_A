@@ -1,0 +1,627 @@
+{% extends "base.html" %}
+{% block title %}Tender AI — Smart Tender Analysis{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+    --green: #16a34a;
+  }
+
+  .landing-page {
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ══════════════════════════════
+     HERO
+  ══════════════════════════════ */
+  .hero {
+    position: relative;
+    background: var(--navy);
+    padding: 120px 24px 140px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  /* Layered radial glows */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 0%,   rgba(30,111,232,0.22) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 10% 80%,  rgba(59,139,255,0.1)  0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 90% 70%,  rgba(30,111,232,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Subtle grid */
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
+  }
+
+  /* Wave cutout into next section */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 72px;
+    background: var(--surface);
+    clip-path: ellipse(58% 100% at 50% 100%);
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(30,111,232,0.15);
+    border: 1px solid rgba(30,111,232,0.32);
+    border-radius: 100px;
+    padding: 7px 20px;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    color: #7eb8ff; margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    background: var(--blue-light); border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  .hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em { font-style: normal; color: var(--blue-light); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: rgba(255,255,255,0.58);
+    max-width: 580px;
+    margin: 0 auto 40px;
+    line-height: 1.75;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.18s ease both;
+  }
+
+  .hero-cta {
+    display: flex; justify-content: center;
+    gap: 14px; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.26s ease both;
+  }
+
+  .cta-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--blue); color: var(--white);
+    padding: 15px 32px; border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.01em;
+    box-shadow: 0 4px 20px rgba(30,111,232,0.38);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  }
+  .cta-primary:hover {
+    background: var(--blue-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(30,111,232,0.44);
+  }
+
+  .cta-ghost {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85);
+    padding: 15px 32px; border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem; font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+  .cta-ghost:hover {
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.07);
+    transform: translateY(-2px);
+  }
+
+  /* Trust bar */
+  .hero-trust {
+    display: flex; justify-content: center;
+    align-items: center; gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 48px;
+    animation: fadeUp 0.6s 0.34s ease both;
+  }
+  .trust-item {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 0.8rem; color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+  .trust-item span { font-size: 14px; }
+
+  /* ══════════════════════════════
+     HOW IT WORKS
+  ══════════════════════════════ */
+  .hiw-section {
+    background: var(--surface);
+    padding: 100px 24px 80px;
+  }
+  .section-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--blue); text-align: center;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800; color: var(--navy);
+    text-align: center; letter-spacing: -0.03em;
+    margin-bottom: 16px; line-height: 1.2;
+  }
+  .section-sub {
+    font-size: 0.95rem; color: var(--muted);
+    text-align: center; max-width: 500px;
+    margin: 0 auto 60px; line-height: 1.7;
+  }
+
+  .steps-row {
+    max-width: 960px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0; position: relative;
+  }
+
+  /* Connector line between steps */
+  .steps-row::before {
+    content: '';
+    position: absolute;
+    top: 44px; left: calc(16.6% + 22px); right: calc(16.6% + 22px);
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue-light), rgba(30,111,232,0.2));
+    z-index: 0;
+  }
+
+  .step {
+    text-align: center; padding: 0 28px;
+    position: relative; z-index: 1;
+  }
+
+  .step-num {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 1.2rem; font-weight: 800;
+    color: var(--white);
+    margin: 0 auto 20px;
+    box-shadow: 0 6px 20px rgba(30,111,232,0.3);
+    border: 3px solid var(--surface);
+  }
+
+  .step h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 8px;
+  }
+  .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+  /* ══════════════════════════════
+     FEATURES
+  ══════════════════════════════ */
+  .features-section {
+    background: var(--white);
+    padding: 80px 24px;
+  }
+
+  .features-grid {
+    max-width: 1000px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 28px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    position: relative; overflow: hidden;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; border-radius: 20px 20px 0 0;
+    background: linear-gradient(90deg, var(--blue), var(--blue-light));
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .feat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(10,22,40,0.1);
+    border-color: rgba(30,111,232,0.2);
+  }
+  .feat-card:hover::before { opacity: 1; }
+
+  .feat-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, rgba(30,111,232,0.12), rgba(59,139,255,0.07));
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 18px;
+  }
+  .feat-card h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.97rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .feat-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+  /* ══════════════════════════════
+     SOCIAL PROOF
+  ══════════════════════════════ */
+  .proof-section {
+    background: var(--surface);
+    padding: 80px 24px;
+  }
+
+  .proof-grid {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .proof-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px; padding: 28px 24px;
+    box-shadow: 0 2px 12px rgba(10,22,40,0.04);
+  }
+
+  .proof-stars { font-size: 0.85rem; color: #f59e0b; margin-bottom: 12px; }
+
+  .proof-card p {
+    font-size: 0.88rem; color: #374151;
+    line-height: 1.7; font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .proof-author {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .proof-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: white; font-weight: 700;
+    font-family: 'Sora', sans-serif; flex-shrink: 0;
+  }
+  .proof-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.82rem; font-weight: 700;
+    color: var(--navy);
+  }
+  .proof-role { font-size: 0.75rem; color: var(--muted); }
+
+  /* Stats strip */
+  .stats-strip {
+    background: var(--navy);
+    padding: 48px 24px;
+  }
+  .stats-strip-inner {
+    max-width: 800px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; text-align: center;
+  }
+  .strip-stat-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    color: var(--white); margin-bottom: 4px;
+  }
+  .strip-stat-value em { font-style: normal; color: var(--blue-light); }
+  .strip-stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.45); font-weight: 500; }
+
+  /* ══════════════════════════════
+     CTA SECTION
+  ══════════════════════════════ */
+  .cta-section {
+    background: var(--white);
+    padding: 100px 24px;
+  }
+  .cta-box {
+    max-width: 720px; margin: 0 auto;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    border-radius: 24px; padding: 64px 56px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 20% 50%, rgba(30,111,232,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 20%, rgba(59,139,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-box-inner { position: relative; }
+
+  .cta-box h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.7rem, 4vw, 2.4rem);
+    font-weight: 800; color: var(--white);
+    letter-spacing: -0.03em; margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .cta-box h2 em { font-style: normal; color: var(--blue-light); }
+
+  .cta-box p {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.95rem; margin-bottom: 36px;
+    max-width: 440px; margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  .cta-box-actions {
+    display: flex; justify-content: center;
+    gap: 14px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+
+  .cta-box-note {
+    font-size: 0.78rem; color: rgba(255,255,255,0.35);
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+
+  /* ══════════════════════════════
+     ANIMATIONS
+  ══════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.45; transform: scale(0.75); }
+  }
+
+  /* scroll reveal */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ══════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════ */
+  @media (max-width: 760px) {
+    .steps-row { grid-template-columns: 1fr; gap: 36px; }
+    .steps-row::before { display: none; }
+    .features-grid { grid-template-columns: 1fr; }
+    .proof-grid { grid-template-columns: 1fr; }
+    .stats-strip-inner { grid-template-columns: repeat(2, 1fr); }
+    .cta-box { padding: 40px 24px; }
+  }
+  @media (max-width: 480px) {
+    .stats-strip-inner { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+
+<div class="landing-page">
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        AI-Powered Tender Analysis for India
+      </div>
+      <h1>Analyze Tenders in <em>Seconds</em></h1>
+      <p class="hero-sub">
+        Upload any government or private tender PDF and instantly know your eligibility score, difficulty rating, and whether you should bid — backed by direct citations.
+      </p>
+      <div class="hero-cta">
+        <a href="/register" class="cta-primary">
+          Start for Free
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="/about" class="cta-ghost">Learn More</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item"><span>✅</span> No credit card required</div>
+        <div class="trust-item"><span>⚡</span> Results in under 30 seconds</div>
+        <div class="trust-item"><span>🇮🇳</span> Built for Indian tenders</div>
+        <div class="trust-item"><span>🔒</span> Your data stays private</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it Works ── -->
+  <section class="hiw-section reveal">
+    <p class="section-eyebrow">How it works</p>
+    <h2 class="section-title">From PDF to decision in 3 steps</h2>
+    <p class="section-sub">No complicated setup. No procurement expertise needed. Just upload and decide.</p>
+    <div class="steps-row">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Upload the Tender PDF</h3>
+        <p>Drag and drop any government or private tender document from GeM, CPPP, or state portals.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>AI Reads &amp; Analyses</h3>
+        <p>Our AI engine scans every clause, extracts eligibility criteria, and flags red flags — in seconds.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Get Your Bid Decision</h3>
+        <p>Receive an eligibility score, difficulty rating, and a clear Bid / Don't Bid recommendation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section class="features-section">
+    <div style="max-width:1000px;margin:0 auto;">
+      <p class="section-eyebrow reveal">Features</p>
+      <h2 class="section-title reveal">Why TenderAI?</h2>
+      <p class="section-sub reveal">Everything an Indian SME needs to compete smarter on every tender.</p>
+    </div>
+    <div class="features-grid reveal">
+      <div class="feat-card">
+        <div class="feat-icon">📄</div>
+        <h3>PDF Upload &amp; Parse</h3>
+        <p>Upload any tender document and our AI extracts all key details, criteria, and deadlines automatically.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🎯</div>
+        <h3>Eligibility Score</h3>
+        <p>Get a 0–100 score showing exactly how eligible your company is, with per-criterion breakdown.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💡</div>
+        <h3>AI Recommendations</h3>
+        <p>Receive actionable steps to improve your chances — or a clear signal to skip and save your time.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📌</div>
+        <h3>Citation-Backed Results</h3>
+        <p>Every finding links to the exact page and line in the tender PDF. Zero guesswork, full transparency.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🚩</div>
+        <h3>Red Flag Detection</h3>
+        <p>Risky clauses, unrealistic timelines, or hidden requirements are surfaced before you waste effort.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📂</div>
+        <h3>Full History &amp; Tracking</h3>
+        <p>All your past analyses are saved so you can compare tenders and build a smarter bidding strategy.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stats strip ── -->
+  <div class="stats-strip reveal">
+    <div class="stats-strip-inner">
+      <div>
+        <p class="strip-stat-value"><em>30s</em></p>
+        <p class="strip-stat-label">Average analysis time</p>
+      </div>
+      <div>
+        <p class="strip-stat-value"><em>100%</em></p>
+        <p class="strip-stat-label">Citation-backed results</p>
+      </div>
+      <div>
+        <p class="strip-stat-value"><em>0</em></p>
+        <p class="strip-stat-label">Manual reading required</p>
+      </div>
+      <div>
+        <p class="strip-stat-value"><em>🇮🇳</em></p>
+        <p class="strip-stat-label">Built for India</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Social Proof ── -->
+  <section class="proof-section reveal">
+    <p class="section-eyebrow">Trusted by builders</p>
+    <h2 class="section-title">What our users say</h2>
+    <p class="section-sub" style="margin-bottom:48px;">Companies across India are already bidding smarter with TenderAI.</p>
+    <div class="proof-grid">
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p>"We used to spend half a day reviewing a single tender. TenderAI cuts that to minutes and flags things we'd have missed."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">R</div>
+          <div>
+            <p class="proof-name">Rajesh Mehta</p>
+            <p class="proof-role">Civil Contractor, Gujarat</p>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p>"The eligibility score is spot-on. We stopped wasting money on tenders we had no chance of winning."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">P</div>
+          <div>
+            <p class="proof-name">Priya Sharma</p>
+            <p class="proof-role">IT SME Owner, Pune</p>
+          </div>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-stars">★★★★★</div>
+        <p>"The citation feature is a game changer. I can point to the exact clause in the PDF — no more back and forth."</p>
+        <div class="proof-author">
+          <div class="proof-avatar">A</div>
+          <div>
+            <p class="proof-name">Arjun Patel</p>
+            <p class="proof-role">GeM Seller, Ahmedabad</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="cta-box reveal">
+      <div class="cta-box-inner">
+        <h2>Ready to win <em>more tenders?</em></h2>
+        <p>Join companies already using TenderAI to make smarter, faster bidding decisions. Your first analysis is free.</p>
+        <div class="cta-box-actions">
+          <a href="/register" class="cta-primary">
+            Create Free Account
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="/about" class="cta-ghost">See How It Works</a>
+        </div>
+        <p class="cta-box-note">🔒 No credit card · Free to start · Secure</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+{% endblock %}

@@ -1,0 +1,448 @@
+{% extends "base.html" %}
+{% block title %}Pricing — Tender AI{% endblock %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --gold: #f59e0b;
+  }
+
+  .pricing-page {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  /* ── Hero ── */
+  .pricing-hero {
+    position: relative;
+    background: var(--navy);
+    padding: 80px 24px 90px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .pricing-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(30,111,232,0.2) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 40% at 10% 80%, rgba(59,139,255,0.1) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  .pricing-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 60px;
+    background: var(--surface);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .pricing-hero-inner {
+    position: relative;
+    max-width: 600px; margin: 0 auto;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(30,111,232,0.15);
+    border: 1px solid rgba(30,111,232,0.3);
+    border-radius: 100px; padding: 6px 18px;
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #7eb8ff; margin-bottom: 24px;
+  }
+  .hero-badge span {
+    width: 6px; height: 6px;
+    background: var(--blue-light); border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+  .pricing-hero h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800; color: var(--white);
+    letter-spacing: -0.03em; margin-bottom: 14px;
+    line-height: 1.15;
+  }
+  .pricing-hero h1 em { font-style: normal; color: var(--blue-light); }
+  .pricing-hero p {
+    color: rgba(255,255,255,0.55);
+    font-size: 1rem; line-height: 1.7; font-weight: 300;
+  }
+
+  /* ── Body ── */
+  .pricing-body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 24px 80px;
+  }
+
+  /* ── Cards grid ── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  /* ── Free card ── */
+  .plan-card {
+    border-radius: 22px;
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .plan-free {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    box-shadow: 0 4px 24px rgba(10,22,40,0.06);
+  }
+
+  /* ── Pro card ── */
+  .plan-pro {
+    background: var(--navy);
+    border: 1.5px solid rgba(30,111,232,0.3);
+    box-shadow: 0 8px 40px rgba(10,22,40,0.18);
+  }
+  .plan-pro::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(30,111,232,0.2) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .plan-pro-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+  }
+
+  .plan-inner { position: relative; }
+
+  /* Popular badge */
+  .popular-badge {
+    position: absolute;
+    top: -1px; right: 28px;
+    background: linear-gradient(135deg, var(--gold), #fbbf24);
+    color: #78350f;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.7rem; font-weight: 800;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 2px 8px rgba(245,158,11,0.35);
+  }
+
+  .plan-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .plan-free .plan-name { color: var(--muted); }
+  .plan-pro  .plan-name { color: var(--blue-light); }
+
+  .plan-price {
+    margin-bottom: 8px; line-height: 1;
+  }
+  .plan-price-amount {
+    font-family: 'Sora', sans-serif;
+    font-size: 3rem; font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  .plan-free .plan-price-amount { color: var(--navy); }
+  .plan-pro  .plan-price-amount { color: var(--white); }
+
+  .plan-price-period {
+    font-size: 0.9rem; font-weight: 400; margin-left: 2px;
+  }
+  .plan-free .plan-price-period { color: var(--muted); }
+  .plan-pro  .plan-price-period { color: rgba(255,255,255,0.45); }
+
+  .plan-tagline {
+    font-size: 0.84rem; margin-bottom: 28px; line-height: 1.5;
+  }
+  .plan-free .plan-tagline { color: var(--muted); }
+  .plan-pro  .plan-tagline { color: rgba(255,255,255,0.5); }
+
+  .plan-divider {
+    height: 1px; margin-bottom: 24px;
+  }
+  .plan-free .plan-divider { background: var(--border); }
+  .plan-pro  .plan-divider { background: rgba(255,255,255,0.08); }
+
+  /* Feature list */
+  .plan-features {
+    list-style: none; padding: 0; margin: 0 0 32px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .plan-feature {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.87rem; line-height: 1.4;
+  }
+  .plan-free .plan-feature { color: #374151; }
+  .plan-pro  .plan-feature { color: rgba(255,255,255,0.8); }
+
+  .feat-check {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; margin-top: 1px;
+  }
+  .plan-free .feat-check { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .plan-pro  .feat-check { background: rgba(30,111,232,0.2); color: var(--blue-light); border: 1px solid rgba(30,111,232,0.3); }
+
+  /* CTA buttons */
+  .plan-btn {
+    display: block; text-align: center;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.92rem; font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.01em;
+  }
+
+  .plan-btn-free {
+    border: 1.5px solid var(--blue);
+    color: var(--blue);
+    background: transparent;
+  }
+  .plan-btn-free:hover {
+    background: rgba(30,111,232,0.06);
+    transform: translateY(-1px);
+  }
+
+  .plan-btn-pro {
+    background: var(--blue);
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(30,111,232,0.35);
+  }
+  .plan-btn-pro:hover {
+    background: var(--blue-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(30,111,232,0.42);
+  }
+
+  /* ── FAQ / trust strip ── */
+  .trust-strip {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+    box-shadow: 0 2px 16px rgba(10,22,40,0.05);
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .trust-item { text-align: center; }
+  .trust-item-icon { font-size: 1.6rem; margin-bottom: 8px; }
+  .trust-item h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 4px;
+  }
+  .trust-item p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+  /* ── FAQ ── */
+  .faq-section {
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .faq-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  .faq-list { display: flex; flex-direction: column; gap: 12px; }
+  .faq-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 24px;
+    box-shadow: 0 1px 8px rgba(10,22,40,0.04);
+  }
+  .faq-q {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.88rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 6px;
+  }
+  .faq-a { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.45; transform: scale(0.75); }
+  }
+
+  @media (max-width: 660px) {
+    .pricing-grid { grid-template-columns: 1fr; }
+    .trust-strip { grid-template-columns: 1fr; padding: 24px 20px; gap: 20px; }
+    .plan-card { padding: 32px 24px; }
+  }
+</style>
+
+<div class="pricing-page">
+
+  <!-- Hero -->
+  <section class="pricing-hero">
+    <div class="hero-grid"></div>
+    <div class="pricing-hero-inner">
+      <div class="hero-badge"><span></span> Pricing</div>
+      <h1><em>Simple</em> Pricing</h1>
+      <p>Start free. Upgrade when you need more.<br>No hidden fees, no surprises.</p>
+    </div>
+  </section>
+
+  <div class="pricing-body">
+
+    <!-- Pricing cards -->
+    <div class="pricing-grid">
+
+      <!-- Free plan -->
+      <div class="plan-card plan-free">
+        <div class="plan-inner">
+          <p class="plan-name">Free Plan</p>
+          <div class="plan-price">
+            <span class="plan-price-amount">₹0</span>
+            <span class="plan-price-period">/month</span>
+          </div>
+          <p class="plan-tagline">Everything you need to get started with smarter bidding.</p>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>10 tender analyses per month</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>Eligibility score with breakdown</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>AI recommendations</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>History (last 30 days)</span>
+            </li>
+          </ul>
+          <a href="/register" class="plan-btn plan-btn-free">Get Started Free</a>
+        </div>
+      </div>
+
+      <!-- Pro plan -->
+      <div class="plan-card plan-pro">
+        <div class="plan-pro-grid"></div>
+        <div class="popular-badge">⭐ Most Popular</div>
+        <div class="plan-inner">
+          <p class="plan-name">Pro Plan</p>
+          <div class="plan-price">
+            <span class="plan-price-amount">₹999</span>
+            <span class="plan-price-period">/month</span>
+          </div>
+          <p class="plan-tagline">For contractors and SMEs who bid regularly and want every edge.</p>
+          <div class="plan-divider"></div>
+          <ul class="plan-features">
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>Unlimited tender analyses</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>Full history — no expiry</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>Priority AI processing</span>
+            </li>
+            <li class="plan-feature">
+              <span class="feat-check">✓</span>
+              <span>Export reports as PDF</span>
+            </li>
+          </ul>
+          <a href="/register" class="plan-btn plan-btn-pro">Coming Soon</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Trust strip -->
+    <div class="trust-strip">
+      <div class="trust-item">
+        <div class="trust-item-icon">🔒</div>
+        <h4>Secure &amp; Private</h4>
+        <p>Your documents are processed securely and never stored or shared.</p>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item-icon">⚡</div>
+        <h4>No Lock-in</h4>
+        <p>Cancel or downgrade anytime. No contracts, no commitments.</p>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item-icon">🇮🇳</div>
+        <h4>Made for India</h4>
+        <p>Prices in INR, designed around Indian government tender formats.</p>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <p class="faq-title">Frequently asked questions</p>
+      <div class="faq-list">
+        <div class="faq-item">
+          <p class="faq-q">Is the free plan really free?</p>
+          <p class="faq-a">Yes — no credit card required. You get 10 full analyses every month at no cost.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">What counts as one analysis?</p>
+          <p class="faq-a">One analysis = one tender PDF upload with a complete eligibility and bid recommendation report.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">When is the Pro plan launching?</p>
+          <p class="faq-a">The Pro plan is coming soon. Register now and you'll be the first to know when it goes live.</p>
+        </div>
+        <div class="faq-item">
+          <p class="faq-q">What tender formats are supported?</p>
+          <p class="faq-a">Any standard PDF tender document — including GeM, CPPP, state e-procurement portals, and private tenders.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

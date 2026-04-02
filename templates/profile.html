@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Profile — Tender AI{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+  }
+
+  .profile-page {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  .profile-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Page header ── */
+  .profile-header {
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .profile-header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+  .profile-header p { font-size: 0.88rem; color: var(--muted); }
+
+  /* ── Form card ── */
+  .profile-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 4px 28px rgba(10,22,40,0.07);
+    overflow: hidden;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  /* Section header inside card */
+  .form-section {
+    padding: 28px 36px 0;
+  }
+  .form-section:first-of-type { padding-top: 36px; }
+
+  .section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--blue);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--border);
+  }
+
+  /* Grid layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 8px;
+  }
+  .col-span-2 { grid-column: span 2; }
+
+  /* Field */
+  .field { display: flex; flex-direction: column; }
+
+  .field-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--text); margin-bottom: 7px;
+    letter-spacing: 0.01em;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .field-label .hint {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem; font-weight: 400;
+    color: #b0bdd0; letter-spacing: 0;
+  }
+
+  .field-input,
+  .field-textarea {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 11px;
+    padding: 11px 14px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+  }
+  .field-input:focus,
+  .field-textarea:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(30,111,232,0.1);
+  }
+  .field-input::placeholder,
+  .field-textarea::placeholder { color: #c4cdd8; }
+  .field-textarea { resize: vertical; line-height: 1.6; }
+
+  /* Section divider */
+  .form-divider {
+    height: 1px; background: var(--border);
+    margin: 28px 0 0;
+  }
+
+  /* ── Save button area ── */
+  .form-footer {
+    padding: 28px 36px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .save-note {
+    font-size: 0.8rem; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .save-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--blue); color: var(--white);
+    border: none; padding: 13px 32px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.01em;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 3px 14px rgba(30,111,232,0.28);
+  }
+  .save-btn:hover {
+    background: var(--blue-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(30,111,232,0.35);
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 620px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .col-span-2 { grid-column: span 1; }
+    .form-section { padding: 20px 20px 0; }
+    .form-footer { padding: 24px 20px; flex-direction: column; align-items: stretch; }
+    .save-btn { width: 100%; justify-content: center; }
+  }
+</style>
+
+<div class="profile-page">
+<div class="profile-wrap">
+
+  <!-- Header -->
+  <div class="profile-header">
+    <h1>Company Profile</h1>
+    <p>Keep your details up to date for accurate tender analysis</p>
+  </div>
+
+  <!-- Card -->
+  <div class="profile-card">
+    <form method="POST">
+
+      <!-- Section: Company Identity -->
+      <div class="form-section">
+        <p class="section-label">Company Identity</p>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Company Name</label>
+            <input type="text" name="company_name"
+              value="{{ profile.company_name if profile else '' }}"
+              placeholder="e.g. Mehta Constructions Pvt Ltd"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Registration Number</label>
+            <input type="text" name="registration_number"
+              value="{{ profile.registration_number if profile else '' }}"
+              placeholder="CIN / LLPIN"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">PAN Number</label>
+            <input type="text" name="pan_number"
+              value="{{ profile.pan_number if profile else '' }}"
+              placeholder="ABCDE1234F"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Certifications</label>
+            <input type="text" name="certifications"
+              value="{{ profile.certifications if profile else '' }}"
+              placeholder="ISO 9001, MSME, etc."
+              class="field-input"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-divider" style="margin: 24px 36px 0;"></div>
+
+      <!-- Section: Financials & Scale -->
+      <div class="form-section">
+        <p class="section-label">Financials &amp; Scale</p>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Annual Turnover <span class="hint">(₹ Lakhs)</span></label>
+            <input type="number" name="turnover"
+              value="{{ profile.turnover if profile else '' }}"
+              placeholder="e.g. 500"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Years of Experience</label>
+            <input type="number" name="experience"
+              value="{{ profile.experience if profile else '' }}"
+              placeholder="e.g. 8"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Employee Count</label>
+            <input type="number" name="employee_count"
+              value="{{ profile.employee_count if profile else '' }}"
+              placeholder="e.g. 45"
+              class="field-input"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-divider" style="margin: 24px 36px 0;"></div>
+
+      <!-- Section: Domain & Expertise -->
+      <div class="form-section">
+        <p class="section-label">Domain &amp; Expertise</p>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Primary Domain</label>
+            <input type="text" name="domain"
+              value="{{ profile.domain if profile else '' }}"
+              placeholder="e.g. IT, Construction, Supply"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Sub Domains <span class="hint">(comma separated)</span></label>
+            <input type="text" name="sub_domains"
+              value="{{ profile.sub_domains | join(', ') if profile and profile.sub_domains else '' }}"
+              placeholder="e.g. Networking, Civil Works"
+              class="field-input"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-divider" style="margin: 24px 36px 0;"></div>
+
+      <!-- Section: Contact Details -->
+      <div class="form-section">
+        <p class="section-label">Contact Details</p>
+        <div class="form-grid">
+          <div class="field">
+            <label class="field-label">Company Email</label>
+            <input type="email" name="company_email"
+              value="{{ profile.company_email if profile else '' }}"
+              placeholder="info@yourcompany.com"
+              class="field-input"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Phone</label>
+            <input type="text" name="phone"
+              value="{{ profile.phone if profile else '' }}"
+              placeholder="+91 98765 43210"
+              class="field-input"/>
+          </div>
+          <div class="field col-span-2">
+            <label class="field-label">Address</label>
+            <textarea name="address" rows="2"
+              class="field-textarea"
+              placeholder="Registered office address">{{ profile.address if profile else '' }}</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="form-footer">
+        <p class="save-note">🔒 Your profile data is stored securely and used only to personalise your analysis.</p>
+        <button type="submit" class="save-btn">
+          Save Profile
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M9 4l5 4-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</div>
+
+{% endblock %}

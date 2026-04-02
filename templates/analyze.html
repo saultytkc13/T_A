@@ -1,0 +1,1145 @@
+{% extends "base.html" %}
+{% block title %}Analyze Tender — Tender AI{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #112240;
+    --blue: #1e6fe8;
+    --blue-light: #3b8bff;
+    --surface: #f4f7fd;
+    --white: #ffffff;
+    --border: #dde4f0;
+    --text: #0a1628;
+    --muted: #5a6a8a;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --yellow: #d97706;
+    --yellow-bg: #fffbeb;
+    --yellow-border: #fde68a;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --red-border: #fecaca;
+    --indigo: #4f46e5;
+    --indigo-bg: #eef2ff;
+    --indigo-border: #c7d2fe;
+  }
+
+  .az-page {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  .az-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── Page header ── */
+  .az-header {
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s ease both;
+  }
+  .az-header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+  .az-header p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  /* ── Upload card ── */
+  .upload-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 24px rgba(10,22,40,0.06);
+    animation: fadeUp 0.5s 0.1s ease both;
+    text-align: center;
+  }
+
+  .upload-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, rgba(30,111,232,0.1), rgba(59,139,255,0.07));
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin: 0 auto 20px;
+  }
+
+  .upload-card h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.2rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .upload-card .upload-sub {
+    font-size: 0.88rem; color: var(--muted);
+    margin-bottom: 32px; line-height: 1.6;
+  }
+
+  /* Drag-and-drop zone */
+  .upload-zone {
+    border: 2px dashed #93c5fd;
+    border-radius: 16px;
+    padding: 40px 24px;
+    background: #f8fbff;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .upload-zone:hover,
+  .upload-zone.dragover {
+    border-color: var(--blue);
+    background: #eef4ff;
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-zone-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .upload-zone-text {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    color: var(--navy); margin-bottom: 4px;
+  }
+  .upload-zone-hint { font-size: 0.78rem; color: var(--muted); }
+  .upload-zone-hint em { color: var(--blue); font-style: normal; font-weight: 600; }
+
+  /* Selected file indicator */
+  .file-selected {
+    display: none;
+    align-items: center; gap: 10px;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.85rem; color: var(--green);
+    font-weight: 600;
+  }
+  .file-selected.show { display: flex; }
+
+  /* Profile pill */
+  .profile-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--indigo-bg);
+    border: 1px solid var(--indigo-border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 0.78rem; color: var(--indigo);
+    font-weight: 600; margin-bottom: 24px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    letter-spacing: 0.01em;
+    box-shadow: 0 3px 14px rgba(30,111,232,0.28);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .submit-btn:hover { background: var(--blue-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(30,111,232,0.35); }
+  .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Feature hints below button */
+  .upload-features {
+    display: flex; justify-content: center;
+    gap: 20px; flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .upload-feature {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.75rem; color: #9ca3af; font-weight: 500;
+  }
+
+  /* ── Divider between sections ── */
+  .section-gap { height: 24px; }
+
+  /* ── Quick summary strip in modal ── */
+  .qs-strip {
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .qs-strip-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.4); margin-bottom: 12px;
+  }
+  .qs-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .qs-item {
+    display: flex; align-items: flex-start; gap: 7px;
+    font-size: 0.8rem; color: rgba(255,255,255,0.75);
+    line-height: 1.4;
+  }
+  .qs-item-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--blue-light); flex-shrink: 0; margin-top: 5px;
+  }
+  .qs-sections {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .qs-tag {
+    background: rgba(30,111,232,0.18);
+    border: 1px solid rgba(30,111,232,0.25);
+    border-radius: 6px; padding: 3px 10px;
+    font-size: 0.72rem; color: #7eb8ff; font-weight: 600;
+  }
+
+  /* ── Result sections ── */
+  .results-wrap { display: flex; flex-direction: column; gap: 20px; animation: fadeUp 0.5s ease both; }
+
+  /* Bid banner */
+  .bid-banner {
+    border-radius: 18px;
+    padding: 28px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border: 2px solid;
+  }
+  .bid-banner.bid-go   { background: var(--green-bg);  border-color: #4ade80; }
+  .bid-banner.bid-warn { background: var(--yellow-bg); border-color: #fbbf24; }
+  .bid-banner.bid-no   { background: var(--red-bg);    border-color: #f87171; }
+
+  .bid-left p.bb-label  { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .bid-left .bb-type    { font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
+  .bid-left .bb-reason  { font-size: 0.78rem; color: var(--muted); }
+
+  .bb-citation { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .cite-page  { font-size: 0.75rem; font-weight: 700; color: var(--blue); }
+  .cite-dot   { font-size: 0.75rem; color: #d1d5db; }
+  .cite-line  { font-size: 0.75rem; color: var(--muted); }
+  .cite-sec   { font-size: 0.75rem; color: var(--blue-light); }
+  .cite-quote { font-size: 0.75rem; color: var(--muted); font-style: italic; margin-top: 2px; }
+  .cite-none  { font-size: 0.75rem; color: #9ca3af; }
+
+  .bid-right { text-align: center; }
+  .bid-right p.bb-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .bid-verdict { font-family: 'Sora', sans-serif; font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+  .bid-verdict.go   { color: var(--green); }
+  .bid-verdict.warn { color: var(--yellow); }
+  .bid-verdict.no   { color: var(--red); }
+  .bid-right .bb-reason { font-size: 0.78rem; color: var(--muted); max-width: 260px; margin-top: 4px; }
+
+  /* Scores row */
+  .scores-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .score-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(10,22,40,0.04);
+  }
+  .score-card .sc-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
+  .score-card .sc-value { font-family: 'Sora', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .score-card .sc-sub   { font-size: 0.75rem; }
+  .sc-value.green  { color: var(--green); }
+  .sc-value.yellow { color: var(--yellow); }
+  .sc-value.red    { color: var(--red); }
+  .sc-value.indigo { color: var(--indigo); }
+  .sc-value.gray   { color: #374151; }
+  .sc-sub.green  { color: var(--green); }
+  .sc-sub.yellow { color: var(--yellow); }
+  .sc-sub.red    { color: var(--red); }
+  .sc-sub.gray   { color: var(--muted); }
+
+  /* Generic result card */
+  .res-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 16px rgba(10,22,40,0.05);
+  }
+  .res-card h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .res-card .res-subtitle { font-size: 0.84rem; color: var(--muted); margin-bottom: 20px; }
+
+  /* Eligibility item */
+  .elig-item {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid;
+    margin-bottom: 12px;
+  }
+  .elig-item:last-child { margin-bottom: 0; }
+  .elig-item.pass  { border-color: var(--green-border); }
+  .elig-item.fail  { border-color: var(--red-border); }
+  .elig-item.warn  { border-color: var(--yellow-border); }
+
+  .elig-main {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+  }
+  .elig-main.pass { background: var(--green-bg); }
+  .elig-main.fail { background: var(--red-bg); }
+  .elig-main.warn { background: var(--yellow-bg); }
+
+  .elig-left { display: flex; align-items: flex-start; gap: 12px; }
+  .elig-icon { font-size: 1.1rem; margin-top: 1px; flex-shrink: 0; }
+  .elig-criterion { font-family: 'Sora', sans-serif; font-size: 0.87rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .elig-note { font-size: 0.78rem; color: var(--muted); }
+  .elig-right { text-align: right; font-size: 0.75rem; flex-shrink: 0; }
+  .elig-right p { color: var(--muted); margin-bottom: 2px; }
+  .elig-right span { font-weight: 600; color: var(--text); }
+
+  .cite-row {
+    padding: 10px 18px;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Colored info cards */
+  .info-card {
+    border-radius: 16px;
+    padding: 22px 26px;
+  }
+  .info-card.indigo { background: var(--indigo-bg); border: 1px solid var(--indigo-border); }
+  .info-card.blue   { background: #eff6ff;          border: 1px solid #bfdbfe; }
+  .info-card.purple { background: #faf5ff;          border: 1px solid #e9d5ff; }
+  .info-card.red    { background: var(--red-bg);    border: 1px solid var(--red-border); }
+  .info-card.gray   { background: #f9fafb;          border: 1px solid #e5e7eb; }
+
+  .info-card h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .info-card.indigo h2 { color: var(--indigo); }
+  .info-card.blue   h2 { color: #1d4ed8; }
+  .info-card.purple h2 { color: #7e22ce; }
+  .info-card.red    h2 { color: var(--red); }
+  .info-card.gray   h2 { color: var(--text); }
+
+  .info-card p  { font-size: 0.88rem; color: #4b5563; line-height: 1.65; }
+
+  /* GeM grid */
+  .gem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .gem-item .gem-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 3px; }
+  .gem-item .gem-val   { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+  /* Border item (financial / dates / docs / flags) */
+  .border-item {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .border-item:last-child { margin-bottom: 0; }
+
+  .bi-main {
+    background: #f9fafb;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bi-main .bi-label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+  .bi-main .bi-value { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text); }
+
+  .bi-simple {
+    background: #f9fafb;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .bi-simple:last-child { margin-bottom: 0; }
+  .bi-simple .bi-label { font-size: 0.82rem; color: var(--muted); margin-bottom: 4px; }
+  .bi-simple .bi-value { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+  /* Date item */
+  .date-main {
+    background: #f9fafb;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .date-event { font-size: 0.87rem; color: var(--text); font-weight: 500; }
+  .date-val   { font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--indigo); }
+
+  /* Doc item */
+  .doc-main {
+    background: #f9fafb;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .doc-check { color: #9ca3af; font-size: 0.9rem; }
+  .doc-name  { font-size: 0.87rem; font-weight: 500; color: var(--text); }
+
+  /* Flag item */
+  .flag-item { border: 1px solid var(--red-border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; }
+  .flag-item:last-child { margin-bottom: 0; }
+  .flag-main { background: var(--red-bg); padding: 13px 16px; display: flex; align-items: flex-start; gap: 10px; }
+  .flag-text  { font-size: 0.87rem; color: #b91c1c; line-height: 1.5; }
+
+  /* Recommendations */
+  .rec-list { display: flex; flex-direction: column; gap: 10px; }
+  .rec-item {
+    background: var(--indigo-bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.55;
+  }
+  .rec-arrow { color: var(--indigo); font-weight: 800; margin-top: 1px; flex-shrink: 0; }
+
+  /* Analyze another */
+  .analyze-again {
+    display: block;
+    text-align: center;
+    background: var(--blue);
+    color: var(--white);
+    padding: 15px;
+    border-radius: 12px;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .analyze-again:hover { background: var(--blue-light); transform: translateY(-1px); }
+
+  /* ── Questions Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,22,40,0.75);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-box {
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: 0 32px 80px rgba(10,22,40,0.22);
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px;
+  }
+  .modal-eyebrow {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 6px;
+  }
+  .modal-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .modal-type { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; }
+  .modal-type span { font-weight: 600; color: var(--blue); }
+
+  .modal-info {
+    background: var(--indigo-bg);
+    border: 1px solid var(--indigo-border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 24px;
+  }
+  .modal-info-title { font-family: 'Sora', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--indigo); margin-bottom: 4px; }
+  .modal-info p     { font-size: 0.84rem; color: #4338ca; line-height: 1.55; }
+
+  .q-item {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    background: #f9fafb;
+    margin-bottom: 14px;
+  }
+  .q-item:last-child { margin-bottom: 0; }
+  .q-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.87rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .q-why { font-size: 0.78rem; color: var(--muted); margin-bottom: 14px; }
+
+  .q-options { display: flex; flex-wrap: wrap; gap: 8px; }
+  .q-option-label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .q-option-label input[type="radio"] { accent-color: var(--blue); }
+  .q-option-text {
+    font-size: 0.85rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    transition: border-color 0.2s;
+  }
+  .q-option-label:hover .q-option-text { border-color: var(--blue); }
+
+  .q-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .q-input:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(30,111,232,0.1);
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .scores-row { grid-template-columns: 1fr 1fr; }
+    .bid-banner { flex-direction: column; }
+    .gem-grid { grid-template-columns: 1fr; }
+    .upload-card, .res-card, .modal-box { padding: 24px 20px; }
+  }
+</style>
+
+<div class="az-page">
+<div class="az-wrap">
+
+  <div class="az-header">
+    <h1>Analyze a Tender</h1>
+    <p>Upload a tender PDF and get instant AI-powered analysis</p>
+  </div>
+
+  <!-- ── Upload Form (Step 1) ── -->
+  {% if not result and not show_questions %}
+  <div class="upload-card">
+    <div class="upload-icon">📄</div>
+    <h2>Upload Your Tender PDF</h2>
+    <p class="upload-sub">Drop any government or private tender document.<br>We'll scan it and tell you exactly what to expect.</p>
+
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+      <input type="hidden" name="step" value="upload"/>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" name="pdf_file" accept=".pdf" required id="pdfInput"/>
+        <span class="upload-zone-icon">☁️</span>
+        <p class="upload-zone-text">Click to browse or drag &amp; drop</p>
+        <p class="upload-zone-hint">PDF files only · <em>Any size supported</em></p>
+      </div>
+
+      <div class="file-selected" id="fileSelected">
+        ✅ <span id="fileName">File selected</span>
+      </div>
+
+      {% if profile %}
+      <div class="profile-pill">
+        🏢 {{ profile.company_name or 'Your Company' }} · {{ profile.domain or 'Profile loaded' }}
+      </div>
+      {% endif %}
+
+      <button type="submit" id="uploadBtn" class="submit-btn">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v10M4 8l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Analyze Tender
+      </button>
+    </form>
+
+    <div class="upload-features">
+      <div class="upload-feature">⚡ Results in ~30 seconds</div>
+      <div class="upload-feature">📌 Citation-backed findings</div>
+      <div class="upload-feature">🔒 Your file stays private</div>
+    </div>
+  </div>
+  {% endif %}
+
+
+  <!-- ── RESULTS ── -->
+  {% if result %}
+  <div class="results-wrap">
+
+    <!-- Tender Type + Bid Recommendation Banner -->
+    <div class="bid-banner
+      {% if result.bid_recommendation == 'BID' %}bid-go
+      {% elif result.bid_recommendation == 'CONDITIONAL_BID' %}bid-warn
+      {% else %}bid-no{% endif %}">
+
+      <div class="bid-left">
+        <p class="bb-label">Tender Type Detected</p>
+        <p class="bb-type">
+          {% if result.tender_type == 'L1' %}🏷️ L1 — Lowest Bidder
+          {% elif result.tender_type == 'QCBS' %}📊 QCBS — Quality + Cost
+          {% elif result.tender_type == 'REVERSE_AUCTION' %}🔨 Reverse Auction
+          {% elif result.tender_type == 'GEM' %}🛒 GeM Portal
+          {% elif result.tender_type == 'DIRECT' %}📋 Direct / Nomination
+          {% else %}{{ result.tender_type }}{% endif %}
+        </p>
+        <p class="bb-reason">{{ result.tender_type_reason }}</p>
+
+        {% if result.tender_type_citation and result.tender_type_citation.found %}
+        <div class="bb-citation">
+          <span class="cite-page">📄 Page {{ result.tender_type_citation.page }}</span>
+          {% if result.tender_type_citation.line %}
+          <span class="cite-dot">·</span>
+          <span class="cite-line">Line {{ result.tender_type_citation.line }}</span>
+          {% endif %}
+          {% if result.tender_type_citation.section %}
+          <span class="cite-dot">·</span>
+          <span class="cite-sec">§ {{ result.tender_type_citation.section }}</span>
+          {% endif %}
+        </div>
+        {% if result.tender_type_citation.quote %}
+        <p class="cite-quote">"{{ result.tender_type_citation.quote }}"</p>
+        {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="bid-right">
+        <p class="bb-label">Bid Recommendation</p>
+        <p class="bid-verdict
+          {% if result.bid_recommendation == 'BID' %}go
+          {% elif result.bid_recommendation == 'CONDITIONAL_BID' %}warn
+          {% else %}no{% endif %}">
+          {% if result.bid_recommendation == 'BID' %}✅ BID
+          {% elif result.bid_recommendation == 'CONDITIONAL_BID' %}⚠️ CONDITIONAL BID
+          {% else %}❌ DO NOT BID{% endif %}
+        </p>
+        <p class="bb-reason">{{ result.bid_recommendation_reason }}</p>
+      </div>
+    </div>
+
+    <!-- Scores Row -->
+    <div class="scores-row">
+      <div class="score-card">
+        <p class="sc-label">Eligibility Score</p>
+        <p class="sc-value
+          {% if result.eligibility_score >= 70 %}green
+          {% elif result.eligibility_score >= 40 %}yellow
+          {% else %}red{% endif %}">
+          {{ result.eligibility_score }}%
+        </p>
+        <p class="sc-sub
+          {% if result.overall_eligibility == 'ELIGIBLE' %}green
+          {% elif result.overall_eligibility == 'PARTIALLY_ELIGIBLE' %}yellow
+          {% else %}red{% endif %}">
+          {{ result.overall_eligibility | replace('_', ' ') }}
+        </p>
+      </div>
+
+      {% if result.t_score_estimate %}
+      <div class="score-card">
+        <p class="sc-label">Technical Score (T)</p>
+        <p class="sc-value indigo">
+          {{ result.t_score_estimate }}<span style="font-size:1.2rem;color:#d1d5db;font-weight:400;">/100</span>
+        </p>
+        {% if result.qcbs_ratio %}
+        <p class="sc-sub gray">QCBS Ratio: {{ result.qcbs_ratio }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="score-card">
+        <p class="sc-label">Project Value</p>
+        <p class="sc-value gray" style="font-size:1.6rem;">₹{{ result.project_value }}<span style="font-size:0.85rem;color:#9ca3af;font-weight:400;"> L</span></p>
+        <p class="sc-sub gray">{{ result.location or '—' }}</p>
+      </div>
+    </div>
+
+    <!-- Eligibility Checklist -->
+    <div class="res-card">
+      <h2>Eligibility Checklist</h2>
+      <p class="res-subtitle">{{ result.eligibility_summary }}</p>
+      <div>
+        {% for item in result.eligibility_criteria %}
+        <div class="elig-item
+          {% if item.status == 'PASS' %}pass
+          {% elif item.status == 'FAIL' %}fail
+          {% else %}warn{% endif %}">
+
+          <div class="elig-main
+            {% if item.status == 'PASS' %}pass
+            {% elif item.status == 'FAIL' %}fail
+            {% else %}warn{% endif %}">
+            <div class="elig-left">
+              <span class="elig-icon">
+                {% if item.status == 'PASS' %}✅{% elif item.status == 'FAIL' %}❌{% else %}⚠️{% endif %}
+              </span>
+              <div>
+                <p class="elig-criterion">{{ item.criterion }}</p>
+                <p class="elig-note">{{ item.note }}</p>
+              </div>
+            </div>
+            <div class="elig-right">
+              <p>Required: <span>{{ item.required }}</span></p>
+              <p>You have: <span>{{ item.company_has }}</span></p>
+            </div>
+          </div>
+
+          <div class="cite-row">
+            {% if item.citation and item.citation.found %}
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+                <span class="cite-page">📄 Page {{ item.citation.page }}</span>
+                {% if item.citation.line %}
+                <span class="cite-dot">·</span>
+                <span class="cite-line">Line {{ item.citation.line }}</span>
+                {% endif %}
+                {% if item.citation.section %}
+                <span class="cite-dot">·</span>
+                <span class="cite-sec">§ {{ item.citation.section }}</span>
+                {% endif %}
+              </div>
+              {% if item.citation.quote %}
+              <p class="cite-quote">"{{ item.citation.quote }}"</p>
+              {% endif %}
+            {% else %}
+              <span class="cite-none">📄 Not mentioned in document</span>
+            {% endif %}
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- T1 Gap -->
+    {% if result.t1_gap %}
+    <div class="info-card indigo">
+      <h2>📊 T1 Gap Analysis</h2>
+      <p>{{ result.t1_gap }}</p>
+    </div>
+    {% endif %}
+
+    <!-- L1 Strategy -->
+    {% if result.l1_strategy %}
+    <div class="info-card blue">
+      <h2>🏷️ L1 Bidding Strategy</h2>
+      <p>{{ result.l1_strategy }}</p>
+    </div>
+    {% endif %}
+
+    <!-- GeM Specific -->
+    {% if result.gem_specific and result.tender_type == 'GEM' %}
+    <div class="info-card purple">
+      <h2>🛒 GeM Specific Details</h2>
+      <div class="gem-grid">
+        {% if result.gem_specific.gem_bid_number %}
+        <div class="gem-item">
+          <p class="gem-label">GeM Bid No.</p>
+          <p class="gem-val">{{ result.gem_specific.gem_bid_number }}</p>
+        </div>
+        {% endif %}
+        <div class="gem-item">
+          <p class="gem-label">OEM Required</p>
+          <p class="gem-val">{{ 'Yes' if result.gem_specific.oem_required else 'No' }}</p>
+        </div>
+        <div class="gem-item">
+          <p class="gem-label">MSME Preference</p>
+          <p class="gem-val">{{ 'Yes' if result.gem_specific.msme_preference else 'No' }}</p>
+        </div>
+        <div class="gem-item">
+          <p class="gem-label">Startup Preference</p>
+          <p class="gem-val">{{ 'Yes' if result.gem_specific.startup_preference else 'No' }}</p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Financial Requirements -->
+    <div class="res-card">
+      <h2>💰 Financial Requirements</h2>
+      <div class="section-gap" style="height:16px;"></div>
+
+      <!-- EMD -->
+      <div class="border-item">
+        <div class="bi-main">
+          <span class="bi-label">EMD Amount</span>
+          <span class="bi-value">{{ result.financial_requirements.emd_amount }}</span>
+        </div>
+        <div class="cite-row">
+          {% if result.financial_requirements.emd_citation and result.financial_requirements.emd_citation.found %}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="cite-page">📄 Page {{ result.financial_requirements.emd_citation.page }}</span>
+              {% if result.financial_requirements.emd_citation.line %}
+              <span class="cite-dot">·</span>
+              <span class="cite-line">Line {{ result.financial_requirements.emd_citation.line }}</span>
+              {% endif %}
+              {% if result.financial_requirements.emd_citation.section %}
+              <span class="cite-dot">·</span>
+              <span class="cite-sec">§ {{ result.financial_requirements.emd_citation.section }}</span>
+              {% endif %}
+            </div>
+            {% if result.financial_requirements.emd_citation.quote %}
+            <p class="cite-quote">"{{ result.financial_requirements.emd_citation.quote }}"</p>
+            {% endif %}
+          {% else %}
+            <span class="cite-none">📄 Not mentioned in document</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Performance Guarantee -->
+      <div class="border-item">
+        <div class="bi-main">
+          <span class="bi-label">Performance Guarantee</span>
+          <span class="bi-value">{{ result.financial_requirements.performance_guarantee }}</span>
+        </div>
+        <div class="cite-row">
+          {% if result.financial_requirements.pg_citation and result.financial_requirements.pg_citation.found %}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="cite-page">📄 Page {{ result.financial_requirements.pg_citation.page }}</span>
+              {% if result.financial_requirements.pg_citation.line %}
+              <span class="cite-dot">·</span>
+              <span class="cite-line">Line {{ result.financial_requirements.pg_citation.line }}</span>
+              {% endif %}
+              {% if result.financial_requirements.pg_citation.section %}
+              <span class="cite-dot">·</span>
+              <span class="cite-sec">§ {{ result.financial_requirements.pg_citation.section }}</span>
+              {% endif %}
+            </div>
+            {% if result.financial_requirements.pg_citation.quote %}
+            <p class="cite-quote">"{{ result.financial_requirements.pg_citation.quote }}"</p>
+            {% endif %}
+          {% else %}
+            <span class="cite-none">📄 Not mentioned in document</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Payment Terms -->
+      <div class="bi-simple">
+        <p class="bi-label">Payment Terms</p>
+        <p class="bi-value">{{ result.financial_requirements.payment_terms }}</p>
+      </div>
+
+      <!-- Working Capital -->
+      <div class="bi-simple">
+        <p class="bi-label">Working Capital Needed</p>
+        <p class="bi-value">{{ result.financial_requirements.working_capital_needed }}</p>
+      </div>
+    </div>
+
+    <!-- Key Dates -->
+    {% if result.key_dates %}
+    <div class="res-card">
+      <h2>📅 Key Dates</h2>
+      <div style="height:16px;"></div>
+      {% for date in result.key_dates %}
+      <div class="border-item">
+        <div class="date-main">
+          <span class="date-event">{{ date.event }}</span>
+          <span class="date-val">{{ date.date }}</span>
+        </div>
+        <div class="cite-row">
+          {% if date.citation and date.citation.found %}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="cite-page">📄 Page {{ date.citation.page }}</span>
+              {% if date.citation.line %}
+              <span class="cite-dot">·</span>
+              <span class="cite-line">Line {{ date.citation.line }}</span>
+              {% endif %}
+              {% if date.citation.section %}
+              <span class="cite-dot">·</span>
+              <span class="cite-sec">§ {{ date.citation.section }}</span>
+              {% endif %}
+            </div>
+            {% if date.citation.quote %}
+            <p class="cite-quote">"{{ date.citation.quote }}"</p>
+            {% endif %}
+          {% else %}
+            <span class="cite-none">📄 Not mentioned in document</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Documents Required -->
+    {% if result.documents_required %}
+    <div class="res-card">
+      <h2>📁 Documents Required</h2>
+      <div style="height:16px;"></div>
+      {% for doc in result.documents_required %}
+      <div class="border-item">
+        <div class="doc-main">
+          <span class="doc-check">□</span>
+          <span class="doc-name">
+            {% if doc is mapping %}{{ doc.document }}{% else %}{{ doc }}{% endif %}
+          </span>
+        </div>
+        {% if doc is mapping and doc.citation %}
+        <div class="cite-row">
+          {% if doc.citation.found %}
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+              <span class="cite-page">📄 Page {{ doc.citation.page }}</span>
+              {% if doc.citation.line %}
+              <span class="cite-dot">·</span>
+              <span class="cite-line">Line {{ doc.citation.line }}</span>
+              {% endif %}
+              {% if doc.citation.section %}
+              <span class="cite-dot">·</span>
+              <span class="cite-sec">§ {{ doc.citation.section }}</span>
+              {% endif %}
+            </div>
+            {% if doc.citation.quote %}
+            <p class="cite-quote">"{{ doc.citation.quote }}"</p>
+            {% endif %}
+          {% else %}
+            <span class="cite-none">📄 Not mentioned in document</span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Red Flags -->
+    {% if result.red_flags and result.red_flags|length > 0 %}
+    <div class="info-card red">
+      <h2>🚩 Red Flags</h2>
+      <div>
+        {% for flag in result.red_flags %}
+        <div class="flag-item">
+          <div class="flag-main">
+            <span>⚠️</span>
+            <span class="flag-text">
+              {% if flag is mapping %}{{ flag.flag }}{% else %}{{ flag }}{% endif %}
+            </span>
+          </div>
+          {% if flag is mapping and flag.citation %}
+          <div class="cite-row">
+            {% if flag.citation.found %}
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:2px;">
+                <span class="cite-page">📄 Page {{ flag.citation.page }}</span>
+                {% if flag.citation.line %}
+                <span class="cite-dot">·</span>
+                <span class="cite-line">Line {{ flag.citation.line }}</span>
+                {% endif %}
+                {% if flag.citation.section %}
+                <span class="cite-dot">·</span>
+                <span class="cite-sec">§ {{ flag.citation.section }}</span>
+                {% endif %}
+              </div>
+              {% if flag.citation.quote %}
+              <p class="cite-quote">"{{ flag.citation.quote }}"</p>
+              {% endif %}
+            {% else %}
+              <span class="cite-none">📄 Not mentioned in document</span>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recommendations -->
+    <div class="res-card">
+      <h2>💡 Recommendations</h2>
+      <div style="height:14px;"></div>
+      <div class="rec-list">
+        {% for rec in result.recommendations %}
+        <div class="rec-item">
+          <span class="rec-arrow">→</span> {{ rec }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="info-card gray">
+      <h2>📝 Summary</h2>
+      <p>{{ result.summary }}</p>
+    </div>
+
+    <!-- Analyze Another -->
+    <a href="/analyze" class="analyze-again">Analyze Another Tender</a>
+
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
+
+<!-- ── Questions Modal ── -->
+{% if show_questions and questions_data %}
+<div id="questionsModal" class="modal-overlay">
+  <div class="modal-box">
+
+    <p class="modal-eyebrow">Tender Detected</p>
+    <h2 class="modal-title">{{ questions_data.tender_title }}</h2>
+    <p class="modal-type">Type: <span>{{ questions_data.tender_type }}</span></p>
+
+    <!-- Quick summary from local Python scan -->
+    {% if quick_summary %}
+    <div class="qs-strip">
+      <p class="qs-strip-title">📋 Detected from document</p>
+      {% if quick_summary.detected_hints %}
+      <div class="qs-grid">
+        {% for hint in quick_summary.detected_hints %}
+        <div class="qs-item"><span class="qs-item-dot"></span>{{ hint }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if quick_summary.sections_found %}
+      <div class="qs-sections">
+        {% for sec in quick_summary.sections_found %}
+        <span class="qs-tag">{{ sec }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if questions_data.questions %}
+    <div class="modal-info">
+      <p class="modal-info-title">❓ A few quick questions</p>
+      <p>Based on this tender's requirements, we need a few details not in your profile. Please answer below.</p>
+    </div>
+    {% else %}
+    <div class="modal-info" style="background:var(--green-bg);border-color:var(--green-border);">
+      <p class="modal-info-title" style="color:var(--green);">✅ Profile looks complete</p>
+      <p style="color:#166534;">Your saved profile already covers this tender's requirements. Click below to generate the full analysis.</p>
+    </div>
+    {% endif %}
+
+    <form method="POST" id="answersForm">
+      <input type="hidden" name="step" value="answers"/>
+      <div>
+        {% for q in questions_data.questions %}
+        <div class="q-item">
+          <p class="q-label">{{ loop.index }}. {{ q.question }}</p>
+          <p class="q-why">{{ q.why_needed }}</p>
+
+          {% if q.input_type == 'yes_no' or q.input_type == 'select' %}
+            <div class="q-options">
+              {% for option in q.options %}
+              <label class="q-option-label">
+                <input type="radio"
+                  name="answer_{{ q.question | replace(' ', '_') | truncate(40, True, '') }}"
+                  value="{{ option }}"/>
+                <span class="q-option-text">{{ option }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          {% elif q.input_type == 'number' %}
+            <input type="number"
+              name="answer_{{ q.question | replace(' ', '_') | truncate(40, True, '') }}"
+              placeholder="Enter number"
+              class="q-input"/>
+          {% else %}
+            <input type="text"
+              name="answer_{{ q.question | replace(' ', '_') | truncate(40, True, '') }}"
+              placeholder="Your answer"
+              class="q-input"/>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" id="submitAnswersBtn" class="submit-btn" style="margin-top:24px;">
+        Generate Full Analysis →
+      </button>
+    </form>
+
+  </div>
+</div>
+{% endif %}
+
+
+<!-- Loading states — JS preserved exactly -->
+<script>
+  // Show selected file name
+  document.getElementById("pdfInput")?.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      document.getElementById("fileName").textContent = file.name;
+      document.getElementById("fileSelected").classList.add("show");
+      document.getElementById("uploadZone").style.borderColor = "var(--green)";
+    }
+  });
+
+  // Drag and drop visual feedback
+  const zone = document.getElementById("uploadZone");
+  zone?.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("dragover"); });
+  zone?.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+  zone?.addEventListener("drop", (e) => { e.preventDefault(); zone.classList.remove("dragover"); });
+
+  document.getElementById("uploadForm")?.addEventListener("submit", function () {
+    const btn = document.getElementById("uploadBtn");
+    btn.innerHTML = "⏳ Reading tender...";
+    btn.disabled = true;
+  });
+
+  document.getElementById("answersForm")?.addEventListener("submit", function () {
+    const btn = document.getElementById("submitAnswersBtn");
+    btn.textContent = "Generating full analysis... ⏳";
+    btn.disabled = true;
+    btn.classList.add("opacity-70", "cursor-not-allowed");
+    document.getElementById("questionsModal").style.background = "rgba(0,0,0,0.8)";
+  });
+</script>
+
+{% endblock %}

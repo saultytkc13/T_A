@@ -1,0 +1,7 @@
+flask
+pdfplumber
+groq
+gunicorn
+supabase
+python-dotenv
+bcrypt
